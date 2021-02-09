@@ -1,0 +1,13 @@
+ /mc/player/:name - Player Data //
+ /mc/match/:ID - Match
+ /mc/rank/:name/players - All Players with rank
+ /mc/player/:name/ranks - All ranks for a player
+ /mc/match/latest/:name - Latest match for player
+ /mc/match/latest - Latest Match
+ /mc/punishments/latest - Latest Punishment
+ /mc/stats - Server stats
+ /mc/servers - Sever stats more
+   /mc/leaderboard/kills
+   /mc/leaderboard/xp
+   /mc/leaderboard/wins
+   /mc/leaderboard/losses
