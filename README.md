@@ -20,4 +20,10 @@ getWarzoneMatch(MATCHID);
 getWarzonePlayer(PLAYERNAME);
 getServerStats();
 getSeverData();
+getWarzoneLeaderboard(VALUE);
+getWarzoneRank(NAME);
+
 ```
+
+
+Note: I'm terrible at coding and this is in no way good. 
