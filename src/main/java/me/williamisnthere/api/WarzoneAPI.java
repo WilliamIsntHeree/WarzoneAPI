@@ -17,12 +17,9 @@ public class WarzoneAPI {
 
 
 
-        private String apiurl;
-        private ObjectMapper mapper;
-        private HashMap<String, WarzonePlayer> warzonePlayerHashMap;
-
+        private final String apiurl;
+        private final ObjectMapper mapper;
         public WarzoneAPI() {
-                warzonePlayerHashMap = new HashMap<>();
                 mapper = new ObjectMapper();
                 this.apiurl = "https://api.warzone.network/";
 
@@ -50,7 +47,13 @@ public class WarzoneAPI {
         }
 
 
-
+        /**
+         *
+         * Get warzone players by NAME
+         * @param name
+         * @return WarzonePlayer
+         * @throws Exception
+         */
         public WarzonePlayer getWarzonePlayer(String name) throws Exception {
 
                 URL url = new URL(this.apiurl + "mc/player/" + name);
@@ -67,16 +70,17 @@ public class WarzoneAPI {
                         String inputLine;
                         while ((inputLine = reader.readLine()) != null) {
                                 response.append(inputLine);
-                                System.out.println(response);
+
                         }
                         reader.close();
                 }
                 JSONObject obj = new JSONObject(response.toString());
-                System.out.println(obj.keySet());
+
                 JSONObject object = (JSONObject) obj.get("user");
                 try {
                         String name2 = "";
                         String uuid = "";
+                        String level = "";
                         Object activeTag = "";
                         int wins = 0;
                         int matches = 0 ;
@@ -115,9 +119,14 @@ public class WarzoneAPI {
                                 tags = object.getJSONArray("tags").toList();
                         }
 
+                        if(object.has("level")) {
+                                level = String.valueOf(object.get("level"));
+                        }
 
 
-                        return new WarzonePlayer(name2, uuid, activeTag, tags, "", "", wins, wool_destroyed, kills, losses, matches);
+
+
+                        return new WarzonePlayer(name2, uuid, activeTag, tags, "", "", wins, wool_destroyed, kills, losses, matches, level);
                 } catch (Exception e) {
                         e.printStackTrace();
                 }
@@ -126,12 +135,19 @@ public class WarzoneAPI {
         }
 
 
+        /**
+         * Get previous warzone match by ID
+         *
+         * @param matchID
+         * @return WarzoneMatch
+         * @throws Exception
+         */
         public WarzoneMatch getWarzoneMatch(String matchID) throws Exception {
                 URL url = new URL(this.apiurl + "mc/match/" + matchID);
 
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
-                System.out.println(connection.getReadTimeout());
+
                 int code = connection.getResponseCode();
                 StringBuffer response = new StringBuffer();
                 if (code == connection.HTTP_OK) {
@@ -158,6 +174,7 @@ public class WarzoneAPI {
                         JSONObject object = playersLoaded.getJSONObject(i);
                         String name2 = "";
                         String uuid = "";
+                        String level = "";
                         Object activeTag = "";
                         int wins = 0;
                         int matches = 0 ;
@@ -196,7 +213,12 @@ public class WarzoneAPI {
                                 tags = object.getJSONArray("tags").toList();
                         }
 
-                        players.add(new WarzonePlayer(name2, uuid, activeTag, tags, "", "", wins, wool_destroyed, kills, losses, matches));
+                        if(object.has("level")) {
+                                level = String.valueOf(object.get("level"));
+                        }
+
+
+                        players.add(new WarzonePlayer(name2, uuid, activeTag, tags, "", "", wins, wool_destroyed, kills, losses, matches, level));
                 }
 
                 String gametype = mapLoaded.getString("gametype");
@@ -220,21 +242,140 @@ public class WarzoneAPI {
 
         }
 
+        /**
+         * Get a warzone rank by name
+         *
+         * @param rank name
+         * @return WarzoneRank
+         * @throws Exception
+         */
+        public WarzoneRank getWarzoneRank(String rank) throws Exception {
+                URL url = new URL(this.apiurl + "mc/rank/" + rank + "/players");
 
-        public List<WarzonePlayer> getWarzonePlayersWithRank(String name) {
-                return null;
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+
+                int code = connection.getResponseCode();
+                StringBuffer response = new StringBuffer();
+                if (code == connection.HTTP_OK) {
+                        BufferedReader reader = new BufferedReader(
+                                new InputStreamReader(connection.getInputStream())
+                        );
+                        String inputLine;
+                        while ((inputLine = reader.readLine()) != null) {
+                                response.append(inputLine);
+                        }
+
+
+                        reader.close();
+
+                }
+
+                JSONObject obj = new JSONObject(response.toString());
+                JSONObject object = (JSONObject) obj.get("rank");
+                JSONArray users =  obj.getJSONArray("users");
+                List<Object> u = users.toList();
+                List<Object> permissions = object.getJSONArray("permissions").toList();
+                List<String> names = new ArrayList<>();
+                for(int i =0; i < u.size(); i++) {
+                        JSONObject object2 = users.getJSONObject(i);
+                        String name2 = object2.getString("name");
+                        names.add(name2);
+                }
+                return new WarzoneRank(permissions, names, object.getString("name"), object.getString("prefix"), object.getBoolean("staff"), object.getInt("priority"));
         }
 
+        /**
+         *
+         * Get the warzone leaderboard
+         * @param aspect (XP/WINS/KILLS/LOSSES)
+         * @return WarzoneLeaderboard
+         * @throws Exception
+         */
+        public WarzoneLeaderboard getWarzoneLeaderboard(String aspect) throws Exception {
+                        URL url = new URL(this.apiurl + "mc/leaderboard/" + aspect);
+                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                        connection.setRequestMethod("GET");
+                        int code = connection.getResponseCode();
+                        StringBuffer response = new StringBuffer();
+                        if (code == connection.HTTP_OK) {
+                                BufferedReader reader = new BufferedReader(
+                                        new InputStreamReader(connection.getInputStream())
+                                );
+                                String inputLine;
+                                while ((inputLine = reader.readLine()) != null) {
+                                        response.append(inputLine);
+                                }
 
 
-        public List<WarzoneRank> getWarzoneRanksWithPlayers(String rank) {
-                return null;
+                                reader.close();
+
+                        }
+
+                        JSONArray obj = new JSONArray(response.toString());
+
+                        List<WarzonePlayer> leaderboard = new ArrayList<>();
+                        for(int i =0; i < obj.length(); i++) {
+                                JSONObject object = (JSONObject) obj.get(i);
+                                String name2 = "";
+                                String uuid = "";
+                                String level = "";
+                                Object activeTag = "";
+                                int wins = 0;
+                                int matches = 0 ;
+                                int kills = 0 ;
+                                int losses = 0 ;
+                                int wool_destroyed = 0 ;
+                                List<Object> tags = new ArrayList<>();
+
+                                if(object.has("name")) {
+                                        name2 = object.getString("name");
+                                }
+
+                                if(object.has("uuid")) {
+                                        uuid = object.getString("uuid");
+                                }
+                                if(object.has("activeTag")) {
+                                        activeTag = object.get("activeTag");
+                                }
+                                if(object.has("wins")) {
+                                        wins = object.getInt("wins");
+                                }
+                                if(object.has("matches")) {
+                                        matches = object.getInt("matches");
+                                }
+                                if(object.has("kills")) {
+                                        kills = object.getInt("kills");
+                                }
+                                if(object.has("losses")) {
+
+                                        losses = object.getInt("losses");
+                                }
+                                if(object.has("wool_destroys")) {
+                                        wool_destroyed = object.getInt("wool_destroys");
+                                }
+                                if(object.has("tags")) {
+                                        tags = object.getJSONArray("tags").toList();
+                                }
+
+                                if(object.has("level")) {
+                                        level = String.valueOf(object.get("level"));
+                                }
+
+                                leaderboard.add(new WarzonePlayer(name2, uuid, activeTag, tags, "", "", wins, wool_destroyed, kills, losses, matches, level));
+                        }
+
+
+
+                return new WarzoneLeaderboard(leaderboard, aspect);
         }
 
-        public WarzoneLeaderboard getWarzoneLeaderboard(String aspect) {
-                return null;
-        }
-
+        /**
+         *  Get warzone Sever Stats
+         *
+         * @return WarzoneStats
+         * @throws Exception
+         */
         public WarzoneStats getServerStats() throws Exception {
                 URL url = new URL(this.apiurl + "mc/stats");
 
@@ -257,7 +398,7 @@ public class WarzoneAPI {
                 }
 
                 JSONObject obj = new JSONObject(response.toString());
-                System.out.println(obj.keySet());
+
 
                 int users = obj.getInt("users");
                 int matches = obj.getInt("matches");
@@ -268,7 +409,12 @@ public class WarzoneAPI {
         }
 
 
-
+        /**
+         * Get warzone server heartbeat
+         *
+         * @return WarzoneServer
+         * @throws Exception
+         */
         public WarzoneServer getServerData() throws Exception{
                 URL url = new URL(this.apiurl + "mc/server/warzone");
 
@@ -288,22 +434,26 @@ public class WarzoneAPI {
 
                         reader.close();
 
+
                 }
 
                 JSONObject obj = new JSONObject(response.toString());
-                System.out.println(obj.keySet());
 
-                WarzoneServer data = new WarzoneServer(obj.getString("motd"),
-                obj.getString("name"),
+
+                WarzoneServer data = new WarzoneServer(
+                        obj.getString("motd"),
+                        obj.getString("name"),
                         obj.getInt("playerCount"),
                         obj.getInt("spectatorCount"),
                         obj.getInt("maxPlayers"),
                         obj.getString("map"),
                         obj.getString("gametype"));
+
                 return data;
         }
 
 
+        //TODO - Add at a later date. Should return players latest match
         public WarzoneMatch getLatestMatchForPlayer(String name) {
                 return null;
         }

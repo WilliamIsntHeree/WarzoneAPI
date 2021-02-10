@@ -1,8 +1,7 @@
 package me.williamisnthere.api.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.List;
+import java.util.Locale;
 
 public class WarzonePlayer {
 
@@ -17,6 +16,7 @@ public class WarzonePlayer {
     private List<Object> tags;
     private String initialJoinDate;
     private String lastOnlineDate;
+    private int lvl;
 
     public WarzonePlayer(String name,
                          String uuid,
@@ -28,8 +28,8 @@ public class WarzonePlayer {
                          int wool_destroys,
                          int kills,
                          int losses,
-                         int matches
-                          ) {
+                         int matches,
+                         String level) {
 
 
         this.name = name;
@@ -43,6 +43,7 @@ public class WarzonePlayer {
         this.tags = tags;
         this.initialJoinDate = initialJoinDate;
         this.lastOnlineDate = lastOnlineDate;
+        this.lvl = Integer.parseInt(level);
     }
 
 
@@ -83,4 +84,31 @@ public class WarzonePlayer {
     public List<Object> getTags() {
         return tags;
     }
+
+    public int getLevel() {
+        return lvl;
+    }
+
+
+    public String getNameLower() {
+        return name.toLowerCase(Locale.ROOT);
+    }
+
+    public String toString() {
+        return "{name=" + name
+                + ",uuid=" + uuid
+                + ",activeTag=" + activeTag
+                + ",tags=" + tags
+                +",wins=" + wins
+                + ",kills=" + kills
+                + ",wool_destroys=" + wool_destroys
+                + ",wins=" + wins
+                + ",losses=" + losses
+                + ",level=" + lvl + "}";
+    }
+
+
+
+
+
 }

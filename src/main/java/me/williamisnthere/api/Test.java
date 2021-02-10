@@ -8,7 +8,7 @@ public class Test {
 
         WarzoneAPI api = new WarzoneAPI();
 
-        System.out.println(api.getWarzoneMatch("5e99fb2a53e0d6002fd24d25").getMap().toString());
+        System.out.println(api.getWarzoneRank("admin").toString());
 
 
 

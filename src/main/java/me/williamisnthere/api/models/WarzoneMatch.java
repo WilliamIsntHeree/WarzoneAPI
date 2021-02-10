@@ -1,5 +1,6 @@
 package me.williamisnthere.api.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class WarzoneMatch {
@@ -24,5 +25,13 @@ public class WarzoneMatch {
 
     public WarzoneMap getMap() {
         return map;
+    }
+
+    public String toString() {
+        List<String> names = new ArrayList<>();
+        playersLoaded.forEach(r -> names.add(r.getName()));
+        return "{playersLoaded=" + names
+                +", winningTeam=" + winningteam
+                + ", map=" + map.getMapname() + "}";
     }
 }

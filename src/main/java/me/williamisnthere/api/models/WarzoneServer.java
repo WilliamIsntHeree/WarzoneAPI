@@ -47,4 +47,14 @@ public class WarzoneServer {
     public String getGametype() {
         return gametype;
     }
+
+
+    public String toString() {
+        return "{MOTD=" + MOTD +
+                ", playerCount=" + playerCount
+                + ",spectatorCount=" + spectatorCount
+                + ",gametype=" + gametype
+                + ",map=" + map
+                + ",name=" + name + "}";
+    }
 }

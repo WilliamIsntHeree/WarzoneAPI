@@ -35,4 +35,12 @@ public class WarzoneStats {
     public int getPunishments() {
         return punishments;
     }
+
+    public String toString() {
+        return "{users=" + users
+                + ", matches=" + matches
+                + ", deaths=" + deaths
+                + ",maps=" + maps
+                +", punishments=" + punishments + "}";
+    }
 }
