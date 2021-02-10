@@ -1,6 +1,5 @@
 package me.williamisnthere.api;
 
-import me.williamisnthere.api.models.WarzonePlayer;
 
 public class Test {
 
