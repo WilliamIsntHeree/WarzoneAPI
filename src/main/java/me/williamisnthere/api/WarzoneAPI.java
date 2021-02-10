@@ -23,29 +23,7 @@ public class WarzoneAPI {
                 mapper = new ObjectMapper();
                 this.apiurl = "https://api.warzone.network/";
 
-                Unirest.setObjectMapper(new com.mashape.unirest.http.ObjectMapper() {
-                        @Override
-                        public <T> T readValue(String s, Class<T> aClass) {
-                                try {
-                                        return mapper.readValue(s, aClass);
-                                } catch (JsonProcessingException e) {
-                                        e.printStackTrace();
-                                }
-                                return null;
-                        }
-
-                        @Override
-                        public String writeValue(Object o) {
-                                try {
-                                        return mapper.writeValueAsString(o);
-                                } catch (JsonProcessingException e) {
-                                        e.printStackTrace();
-                                }
-                                return null;
-                        }
-                });
         }
-
 
         /**
          *
