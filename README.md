@@ -24,6 +24,10 @@ getWarzoneLeaderboard(VALUE);
 getWarzoneRank(NAME);
 
 ```
+Example Response (Rank)
 
+```
+{rank=admin,permissions=[nocheatplus.notify, wz.bypasskick],loadedPlayers=[JorgeberrexMC, BennyDoesStuff, Sqyid],prefix=&c&lADMIN,staff=true,priority=100}
+```
 
 Note: I'm terrible at coding and this is in no way good. 
